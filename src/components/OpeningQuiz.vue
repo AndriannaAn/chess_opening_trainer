@@ -1,5 +1,31 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { openings } from '@/data/openings.ts'
+import ChessBoard from './ChessBoard.vue'
+
+const index = ref(Math.floor(Math.random() * openings.length))
+const opening = ref(openings[index.value])
+const guess = ref('')
+const result = ref(false)
+const isCorrect = ref(false)
+
+function checkAnswer() {
+  isCorrect.value = guess.value.trim().toLowerCase() === opening.value.name.toLowerCase()
+  result.value = true
+}
+
+function nextOpening() {
+  guess.value = ''
+  result.value = false
+  index.value = Math.floor(Math.random() * openings.length)
+  opening.value = openings[index.value]
+}
+</script>
+
 <template>
   <div class="quiz">
+    <ChessBoard :moves="opening.moves" />
+
     <p class="moves">
       Moves: <strong>{{ opening.moves.join(', ') }}</strong>
     </p>
@@ -27,35 +53,16 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-import { openings } from '@/data/openings.ts'
-
-const index = ref(Math.floor(Math.random() * openings.length))
-const opening = ref(openings[index.value])
-const guess = ref('')
-const result = ref(false)
-const isCorrect = ref(false)
-
-function checkAnswer() {
-  isCorrect.value = guess.value.trim().toLowerCase() === opening.value.name.toLowerCase()
-  result.value = true
-}
-
-function nextOpening() {
-  guess.value = ''
-  result.value = false
-  index.value = Math.floor(Math.random() * openings.length)
-  opening.value = openings[index.value]
-}
-</script>
-
 <style scoped lang="scss">
 .quiz {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+
+  chessboard {
+    margin: 1rem auto;
+  }
 
   input {
     padding: 0.5rem;

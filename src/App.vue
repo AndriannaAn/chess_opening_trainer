@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import OpeningQuiz from '@/components/OpeningQuiz.vue'
-</script>
-
 <template>
   <div class="app">
     <h1>♟ Chess Opening Trainer</h1>
@@ -10,7 +5,11 @@ import OpeningQuiz from '@/components/OpeningQuiz.vue'
   </div>
 </template>
 
-<style scoped lang="scss">
+<script setup lang="ts">
+import OpeningQuiz from '@/components/OpeningQuiz.vue'
+</script>
+
+<style scoped>
 .app {
   text-align: center;
   padding: 2rem;
