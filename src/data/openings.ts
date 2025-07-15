@@ -5,7 +5,6 @@ export interface Opening {
   description: string
 }
 
-
 export const openings: Opening[] = [
   {
     name: 'Ruy Lopez',
@@ -58,7 +57,7 @@ export const openings: Opening[] = [
   {
     name: 'Caro‑Kann Defense',
     eco: 'B10',
-    moves: ['e4', 'c6', 'd4', 'd5'],
+    moves: ['e4', 'c6'],
     description:
       'A solid, less‐sharp defense than the Sicilian, aiming for a strong pawn structure.',
   },
@@ -136,11 +135,4 @@ export const openings: Opening[] = [
     moves: ['f4'],
     description: 'A flank opening aiming to control e5 quickly and unbalance the position.',
   },
-  {
-    name: 'Blackmar–Diemer Gambit',
-    eco: 'D00',
-    moves: ['d4', 'd5', 'Nc3', 'd4', 'e4'],
-    description: 'A speculative pawn sacrifice for rapid development and tactical melee.',
-  },
 ]
-
