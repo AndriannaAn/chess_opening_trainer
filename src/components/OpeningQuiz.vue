@@ -191,6 +191,9 @@ onMounted(async () => {
       </form>
 
       <div v-else class="result">
+        <p class="your-guess">
+          Your answer: <em>{{ guess }}</em>
+        </p>
         <p v-if="isCorrect" class="correct">✅ Correct!</p>
         <p v-else class="wrong">
           ❌ Incorrect. It was: <strong>{{ currentOpening?.name }}</strong>
@@ -353,6 +356,12 @@ button {
   padding: 4px;
   margin: 0 2px;
   border-radius: 4px;
+}
+
+.your-guess {
+  margin-bottom: 0.5rem;
+  font-style: italic;
+  color: var(--color-muted);
 }
 /* ── Desktop: two‑column layout ── */
 @media (min-width: 1024px) {
