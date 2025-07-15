@@ -45,13 +45,13 @@ export const openings: Opening[] = [
   {
     name: 'Italian Game',
     eco: 'C50',
-    moves: ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5'],
+    moves: ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4'],
     description: 'Develops pieces naturally and eyes the vulnerable f7 square.',
   },
   {
     name: 'Scotch Game',
     eco: 'C44',
-    moves: ['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'exd4', 'Nxd4'],
+    moves: ['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'exd4'],
     description: 'Opens the center early to launch piece activity and tactical chances.',
   },
   {
@@ -71,22 +71,22 @@ export const openings: Opening[] = [
     name: 'Slav Defense',
     eco: 'D10',
     moves: ['d4', 'd5', 'c4', 'c6'],
-    description: 'A rock‑solid response to the Queen’s Gambit that fights for the center.',
+    description: 'A rock-solid response to the Queen’s Gambit that fights for the center.',
   },
   {
     name: 'Catalan Opening',
-    eco: 'E01',
+    eco: 'E00',
     moves: ['d4', 'Nf6', 'c4', 'e6', 'g3'],
     description: 'Combines elements of the Queen’s Gambit and Reti for long‑term pressure on d5.',
   },
   {
     name: 'King’s Gambit',
     eco: 'C30',
-    moves: ['e4', 'e5', 'f4', 'exf4'],
+    moves: ['e4', 'e5', 'f4'],
     description: 'A daring pawn sacrifice to open lines and launch a quick attack on Black’s king.',
   },
   {
-    name: 'Petrov’s Defense (Russian Defense)',
+    name: 'Petrov’s Defense',
     eco: 'C42',
     moves: ['e4', 'e5', 'Nf3', 'Nf6'],
     description:
@@ -95,13 +95,13 @@ export const openings: Opening[] = [
   {
     name: 'Four Knights Game',
     eco: 'C47',
-    moves: ['e4', 'e5', 'Nf3', 'Nc6', 'Nc3', 'Nf6', 'Bb5'],
+    moves: ['e4', 'e5', 'Nf3', 'Nc6', 'Nc3', 'Nf6'],
     description: 'Peaceful development aiming for flexible central play and piece harmony.',
   },
   {
     name: 'Vienna Game',
     eco: 'C25',
-    moves: ['e4', 'e5', 'Nc3', 'Nf6'],
+    moves: ['e4', 'e5', 'Nc3'],
     description: 'Similar to the King’s Gambit but delays f4, leading to rich attacking chances.',
   },
   {
@@ -112,7 +112,7 @@ export const openings: Opening[] = [
   },
   {
     name: 'Alekhine’s Defense',
-    eco: 'B02',
+    eco: 'B03',
     moves: ['e4', 'Nf6', 'e5', 'Nd5', 'd4', 'd6'],
     description: 'Entices White to build a center only to attack and undermine it later.',
   },
