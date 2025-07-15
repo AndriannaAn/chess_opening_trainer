@@ -1,15 +1,10 @@
 <template>
-  <div class="board">
-    <div v-for="(row, r) in boardRows" :key="r" class="rank">
-      <div
-        v-for="(cell, f) in row"
-        :key="f"
-        class="square"
-        :class="{
-          dark: (r + f) % 2 === 1,
-        }"
-      >
-        <span class="piece">{{ pieceSymbol(cell) }}</span>
+  <div class="board-card">
+    <div class="board">
+      <div v-for="(row, r) in boardRows" :key="r" class="rank">
+        <div v-for="(cell, f) in row" :key="f" class="square" :class="{ dark: (r + f) % 2 === 1 }">
+          <span class="piece">{{ pieceSymbol(cell) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -70,31 +65,42 @@ function pieceSymbol(letter: string) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.board-card {
+  margin: 0 auto 1rem;
+}
+.board-card {
+  margin: 0 auto 1rem;
+  max-width: none;
+  width: auto;
+}
+
 .board {
-  display: inline-grid;
-  grid-template-rows: repeat(8, 48px);
+  display: grid;
+  grid-template-columns: repeat(8, clamp(24px, 8vw, 44px));
+  grid-template-rows: repeat(8, clamp(24px, 8vw, 44px));
   border: 2px solid #333;
 }
+
 .rank {
-  display: inline-grid;
-  grid-template-columns: repeat(8, 48px);
+  display: contents;
 }
+
 .square {
-  width: 48px;
-  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &.dark {
+    background: var(--board-dark);
+  }
+  &:not(.dark) {
+    background: var(--board-light);
+  }
 }
-.square.dark {
-  background: #b58863;
-}
-.square:not(.dark) {
-  background: #f0d9b5;
-}
+
 .piece {
-  font-size: 32px;
+  font-size: clamp(16px, 4vw, 28px);
   line-height: 1;
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div class="app">
-    <h1>♟ Chess Opening Trainer</h1>
     <OpeningQuiz />
   </div>
 </template>
@@ -12,12 +11,7 @@ import OpeningQuiz from '@/components/OpeningQuiz.vue'
 <style scoped>
 .app {
   text-align: center;
-  padding: 2rem;
+  padding: 0 2rem;
   font-family: 'Segoe UI', sans-serif;
-
-  h1 {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-  }
 }
 </style>

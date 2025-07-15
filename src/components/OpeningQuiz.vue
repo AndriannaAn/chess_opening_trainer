@@ -151,21 +151,28 @@ onMounted(() => {
 
 <template>
   <div class="quiz-container">
-    <!-- Stats Panel -->
-    <div class="stats">
-      <p>
-        Answered: {{ stats.total }} | Correct: {{ stats.correct }} ({{ percentage }}%) | Streak:
-        {{ stats.streak }} | Best Streak: {{ stats.bestStreak }}
+    <!-- 1) Header row -->
+    <header class="header">
+      <h1>♟ Chess Opening Trainer</h1>
+    </header>
+
+    <!-- 2) Stats sidebar -->
+    <aside class="stats">
+      <p class="stats‐metrics">
+        <span>Answered: {{ stats.total }} </span>
+        <span>Correct: {{ stats.correct }} ({{ percentage }}%) </span>
+        <span>Streak: {{ stats.streak }} </span>
+        <span>Best Streak: {{ stats.bestStreak }}</span>
       </p>
       <button class="reset-btn" @click="resetSession">Start Over</button>
-    </div>
+    </aside>
 
-    <!-- Quiz -->
-    <div v-if="currentOpening" class="quiz">
-      <ChessBoard :moves="currentOpening.moves" />
+    <!-- 3) Main quiz area -->
+    <section class="quiz">
+      <ChessBoard :moves="currentOpening?.moves || []" />
 
       <p class="moves">
-        Moves: <strong>{{ currentOpening.moves.join(', ') }}</strong>
+        Moves: <strong>{{ currentOpening?.moves.join(', ') }}</strong>
       </p>
 
       <input
@@ -179,69 +186,190 @@ onMounted(() => {
       <div v-if="result" class="result">
         <p v-if="isCorrect" class="correct">✅ Correct!</p>
         <p v-else class="wrong">
-          ❌ Incorrect. It was: <strong>{{ currentOpening.name }}</strong>
+          ❌ Incorrect. It was: <strong>{{ currentOpening?.name }}</strong>
         </p>
 
         <div class="info">
-          <p><strong>ECO:</strong> {{ currentOpening.eco }}</p>
-          <p>{{ currentOpening.description }}</p>
+          <p><strong>ECO:</strong> {{ currentOpening?.eco }}</p>
+          <p>{{ currentOpening?.description }}</p>
           <button @click="nextOpening">Next Opening</button>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <style scoped lang="scss">
 .quiz-container {
+  display: grid;
+  grid-template-areas:
+    'header'
+    'stats'
+    'quiz';
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+
+  .stats,
+  .header,
+  .quiz {
+    min-width: 0;
+  }
+
+  .result,
+  .info {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+.header {
+  grid-area: header;
+  text-align: center;
+}
+
+/* stats panel */
+.stats {
+  grid-area: stats;
+  background: var(--color-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: left;
+
+  p {
+    margin: 0 0 0.5rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+  .reset-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    background: var(--color-error);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: filter 0.2s;
+    &:hover {
+      filter: brightness(0.9);
+    }
+  }
+}
+
+/* quiz panel */
+.quiz {
+  grid-area: quiz;
+  background: var(--color-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+}
 
-  .stats {
-    width: 100%;
-    text-align: center;
-    background: #f7f7f7;
-    padding: 0.5rem;
-    border-radius: 4px;
+.moves {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+input {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+button {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s;
+  &:hover:not(:disabled) {
+    filter: brightness(0.9);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.result {
+  width: 100%;
+  text-align: center;
+  margin-top: 1rem;
+
+  p {
+    margin: 0.3rem 0;
+    font-weight: 500;
+  }
+  .correct {
+    color: var(--color-success);
+  }
+  .wrong {
+    color: var(--color-error);
+  }
+
+  .info {
+    margin-top: 0.5rem;
     font-size: 0.9rem;
-    color: #333;
-
-    .reset-btn {
-      margin-left: 1rem;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.8rem;
-      background: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
+    color: var(--color-muted);
+    strong {
+      color: var(--color-text);
     }
   }
-
-  .moves {
-    font-style: italic;
+}
+.stats‐metrics span {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  border: 1px solid lightsteelblue;
+  padding: 4px;
+  margin: 0 2px;
+  border-radius: 4px;
+}
+/* ── Desktop: two‑column layout ── */
+@media (min-width: 800px) {
+  .quiz {
+    width: 600px;
   }
 
-  input,
-  button {
-    padding: 0.5rem;
-    font-size: 1rem;
+  .quiz-container {
+    grid-template-areas:
+      'stats header'
+      'stats quiz';
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
   }
 
-  .result {
+  .header {
     text-align: center;
-
-    .correct {
-      color: green;
-    }
-    .wrong {
-      color: red;
-    }
-
-    .info {
-      margin-top: 0.5rem;
+  }
+  .stats‐metrics {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    span {
+      border: none;
     }
   }
 }
