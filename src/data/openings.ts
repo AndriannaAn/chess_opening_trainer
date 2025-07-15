@@ -1,4 +1,12 @@
-export const openings = [
+export interface Opening {
+  name: string
+  eco: string
+  moves: string[]
+  description: string
+}
+
+
+export const openings: Opening[] = [
   {
     name: 'Ruy Lopez',
     eco: 'C60',
@@ -135,3 +143,4 @@ export const openings = [
     description: 'A speculative pawn sacrifice for rapid development and tactical melee.',
   },
 ]
+
