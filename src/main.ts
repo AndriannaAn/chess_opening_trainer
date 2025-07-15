@@ -6,7 +6,8 @@ import './styles/global.scss'
 
 import App from './App.vue'
 import router from './router'
-import 'vue3-chessboard/style.css'
+
+import './styles/global.scss'
 
 const app = createApp(App)
 
