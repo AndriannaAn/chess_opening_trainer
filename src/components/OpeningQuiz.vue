@@ -3,9 +3,12 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import ChessBoard from './ChessBoard.vue'
 import { openings, Opening } from '@/data/openings'
 
-// ————— Shuffle helper —————
-function shuffleArray<T>(array: T[]): T[] {
-  const a = array.slice()
+// ————— Constants & shuffle helper —————
+const STATS_KEY = 'quizStats'
+const DECK_KEY = 'quizDeck'
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = arr.slice()
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
     ;[a[i], a[j]] = [a[j], a[i]]
@@ -20,51 +23,72 @@ interface Stats {
   streak: number
   bestStreak: number
 }
-const STORAGE_KEY = 'quizStats'
-const stats = reactive<Stats>({ total: 0, correct: 0, streak: 0, bestStreak: 0 })
+
+const stats = reactive<Stats>({
+  total: 0,
+  correct: 0,
+  streak: 0,
+  bestStreak: 0,
+})
 
 function loadStats() {
-  const raw = localStorage.getItem(STORAGE_KEY)
+  const raw = localStorage.getItem(STATS_KEY)
+  if (raw) Object.assign(stats, JSON.parse(raw))
+}
+
+function saveStats() {
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+}
+
+// ————— Deck persistence —————
+const deck = ref<number[]>([])
+
+function loadDeck() {
+  const raw = localStorage.getItem(DECK_KEY)
+  let parsed: number[] = []
+
   if (raw) {
     try {
-      Object.assign(stats, JSON.parse(raw))
-    } catch {}
+      parsed = JSON.parse(raw)
+    } catch {
+      parsed = []
+    }
   }
+
+  // If it’s not the right length, rebuild from scratch
+  if (!Array.isArray(parsed) || parsed.length !== openings.length) {
+    parsed = shuffleArray(openings.map((_, i) => i))
+    localStorage.setItem(DECK_KEY, JSON.stringify(parsed))
+  }
+
+  deck.value = parsed
 }
-function saveStats() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats))
-}
-function resetStats() {
-  stats.total = 0
-  stats.correct = 0
-  stats.streak = 0
-  stats.bestStreak = 0
-  saveStats()
+
+function saveDeck() {
+  localStorage.setItem(DECK_KEY, JSON.stringify(deck.value))
 }
 
 // ————— Quiz state —————
-const deck = ref<number[]>([])
 const currentOpening = ref<Opening | null>(null)
-
 const guess = ref('')
 const result = ref(false)
 const isCorrect = ref(false)
 
 const percentage = computed(() =>
-  stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0,
+  stats.total ? Math.round((stats.correct / stats.total) * 100) : 0,
 )
 
-// Draw the next opening index from the deck
+// Draw next opening (and persist deck)
 function drawOpening() {
-  if (deck.value.length === 0) {
-    // once exhausted, reshuffle the full deck
+  if (!deck.value.length) {
     deck.value = shuffleArray(openings.map((_, i) => i))
   }
   const idx = deck.value.shift()!
+  saveDeck()
   currentOpening.value = openings[idx]
 }
 
-// ————— Quiz logic —————
+// Check answer and update stats
 function normalizeName(s: string): string {
   return s
     .trim()
@@ -85,26 +109,42 @@ function checkAnswer() {
   if (isCorrect.value) {
     stats.correct++
     stats.streak++
-    if (stats.streak > stats.bestStreak) stats.bestStreak = stats.streak
+    stats.bestStreak = Math.max(stats.bestStreak, stats.streak)
   } else {
     stats.streak = 0
   }
   saveStats()
 }
 
+// Move to the next opening
 function nextOpening() {
-  // reset UI state
   guess.value = ''
   result.value = false
   isCorrect.value = false
-  // pick the next one
   drawOpening()
 }
 
+// Reset entire session: stats + deck
+function resetSession() {
+  // clear stats
+  stats.total = 0
+  stats.correct = 0
+  stats.streak = 0
+  stats.bestStreak = 0
+  saveStats()
+
+  // clear & reshuffle deck
+  deck.value = shuffleArray(openings.map((_, i) => i))
+  saveDeck()
+
+  // load first opening
+  drawOpening()
+}
+
+// on mount, load persisted state and draw
 onMounted(() => {
   loadStats()
-  // initialize & shuffle the deck, then draw first
-  deck.value = shuffleArray(openings.map((_, i) => i))
+  loadDeck()
   drawOpening()
 })
 </script>
@@ -117,10 +157,10 @@ onMounted(() => {
         Answered: {{ stats.total }} | Correct: {{ stats.correct }} ({{ percentage }}%) | Streak:
         {{ stats.streak }} | Best Streak: {{ stats.bestStreak }}
       </p>
-      <button class="reset-btn" @click="resetStats">Start Over</button>
+      <button class="reset-btn" @click="resetSession">Start Over</button>
     </div>
 
-    <!-- Quiz (only once we have a currentOpening) -->
+    <!-- Quiz -->
     <div v-if="currentOpening" class="quiz">
       <ChessBoard :moves="currentOpening.moves" />
 
@@ -157,7 +197,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 
   .stats {
     width: 100%;
@@ -167,6 +207,17 @@ onMounted(() => {
     border-radius: 4px;
     font-size: 0.9rem;
     color: #333;
+
+    .reset-btn {
+      margin-left: 1rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
   }
 
   .moves {
