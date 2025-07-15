@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import ChessBoard from './ChessBoard.vue'
 import { openings, Opening } from '@/data/openings'
 
 // ————— Constants & shuffle helper —————
 const STATS_KEY = 'quizStats'
 const DECK_KEY = 'quizDeck'
+const inputRef = ref<HTMLInputElement | null>(null)
+const nextBtn = ref<HTMLButtonElement | null>(null)
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = arr.slice()
@@ -93,8 +95,7 @@ function normalizeName(s: string): string {
   return s
     .trim()
     .toLowerCase()
-    .replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\-]+/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/[\u2010-\u2015\-]|[’']|\s+/g, (m) => (/[’']/.test(m) ? '' : ' '))
 }
 
 function checkAnswer() {
@@ -104,6 +105,10 @@ function checkAnswer() {
 
   isCorrect.value = attempt === actual
   result.value = true
+
+  nextTick(() => {
+    nextBtn.value?.focus()
+  })
 
   stats.total++
   if (isCorrect.value) {
@@ -122,6 +127,9 @@ function nextOpening() {
   result.value = false
   isCorrect.value = false
   drawOpening()
+  nextTick(() => {
+    inputRef.value?.focus()
+  })
 }
 
 // Reset entire session: stats + deck
@@ -142,10 +150,12 @@ function resetSession() {
 }
 
 // on mount, load persisted state and draw
-onMounted(() => {
+onMounted(async () => {
   loadStats()
   loadDeck()
   drawOpening()
+  await nextTick()
+  inputRef.value?.focus()
 })
 </script>
 
@@ -175,15 +185,12 @@ onMounted(() => {
         Moves: <strong>{{ currentOpening?.moves.join(', ') }}</strong>
       </p>
 
-      <input
-        v-model="guess"
-        type="text"
-        placeholder="Guess the opening name"
-        @keyup.enter="checkAnswer"
-      />
-      <button @click="checkAnswer">Submit</button>
+      <form v-if="!result" @submit.prevent="checkAnswer">
+        <input ref="inputRef" v-model="guess" type="text" placeholder="Guess the opening name" />
+        <button type="submit">Submit</button>
+      </form>
 
-      <div v-if="result" class="result">
+      <div v-else class="result">
         <p v-if="isCorrect" class="correct">✅ Correct!</p>
         <p v-else class="wrong">
           ❌ Incorrect. It was: <strong>{{ currentOpening?.name }}</strong>
@@ -192,7 +199,7 @@ onMounted(() => {
         <div class="info">
           <p><strong>ECO:</strong> {{ currentOpening?.eco }}</p>
           <p>{{ currentOpening?.description }}</p>
-          <button @click="nextOpening">Next Opening</button>
+          <button ref="nextBtn" type="button" @click="nextOpening">Next Opening</button>
         </div>
       </div>
     </section>
@@ -238,7 +245,7 @@ onMounted(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   padding: 1rem;
-  text-align: left;
+  text-align: center;
 
   p {
     margin: 0 0 0.5rem;
@@ -246,9 +253,9 @@ onMounted(() => {
     font-size: 0.9rem;
   }
   .reset-btn {
-    padding: 0.4rem 0.8rem;
+    padding: 0.6rem 0.8rem;
     font-size: 0.8rem;
-    background: var(--color-error);
+    background: var(--color-secondary);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -266,7 +273,6 @@ onMounted(() => {
   background: var(--color-card);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 600px;
   border-radius: 8px;
   padding: 1.5rem;
   display: flex;
@@ -303,6 +309,7 @@ button {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   font-weight: 600;
+  margin-top: 1rem;
   cursor: pointer;
   transition: filter 0.2s;
   &:hover:not(:disabled) {
@@ -348,7 +355,7 @@ button {
   border-radius: 4px;
 }
 /* ── Desktop: two‑column layout ── */
-@media (min-width: 800px) {
+@media (min-width: 1024px) {
   .quiz {
     width: 600px;
   }
@@ -363,6 +370,9 @@ button {
 
   .header {
     text-align: center;
+  }
+  .stats {
+    text-align: left;
   }
   .stats‐metrics {
     display: flex;
