@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import ChessBoard from './ChessBoard.vue'
-import { openings, Opening } from '@/data/openings'
-
+import { openings } from '@/data/openings'
+import type { Opening } from '@/data/openings'
 // ————— Constants & shuffle helper —————
 const STATS_KEY = 'quizStats'
 const DECK_KEY = 'quizDeck'
