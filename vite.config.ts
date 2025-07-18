@@ -7,7 +7,10 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/chess_opening_trainer/',
+  base: './',
+  build: {
+    outDir: 'docs'    // output goes into docs/ instead of dist/
+  },
 
   plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
