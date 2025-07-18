@@ -8,6 +8,9 @@ Persistent stats in localStorage: total answered, correct, current streak, best 
 Responsive layout with a sidebar on desktop and a single‑column view on mobile.
 Keyboard support: Enter to submit and Enter to advance to the next opening.
 
+Live Demo:
+[https://andrianna an.github.io/chess_opening_trainer/](https://andriannaan.github.io/chess_opening_trainer/)
+
 Screenshot: 
 https://github.com/user-attachments/assets/3be23a70-0d4d-44d8-93d8-dcf48c0bcab1
 
